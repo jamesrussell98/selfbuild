@@ -1,1 +1,232 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#102a43">
+<title>Self-Build Finance Planner</title>
+<style>
+:root{
+  --navy:#102a43;--navy-2:#163a5f;--teal:#00a896;--teal-dark:#007f73;
+  --gold:#f4b942;--ice:#f4f8fb;--white:#fff;--ink:#162334;--muted:#64748b;
+  --line:#dfe7ef;--danger:#dc4c64;--success:#138a72;--shadow:0 18px 45px rgba(16,42,67,.10);
+}
+*{box-sizing:border-box}html{font-size:15px;scroll-behavior:smooth}
+body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--ink);background:linear-gradient(135deg,#edf5f7 0%,#f8fafc 48%,#edf2f7 100%);min-height:100vh}
+button,input{font:inherit}button{touch-action:manipulation}
+.app{max-width:1240px;margin:auto;padding:24px}
+.hero{position:relative;overflow:hidden;background:linear-gradient(125deg,var(--navy),var(--navy-2));color:#fff;border-radius:24px;padding:28px 30px;box-shadow:var(--shadow)}
+.hero:after{content:"";position:absolute;width:330px;height:330px;border-radius:50%;right:-120px;top:-190px;background:rgba(0,168,150,.26)}
+.hero-row{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;font-size:.72rem;color:#83e8dc}
+h1{margin:7px 0 6px;font-size:clamp(1.65rem,4vw,2.55rem);letter-spacing:-.045em}.hero p{margin:0;color:#c9d8e7;max-width:620px;line-height:1.55}
+.actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:12px;padding:11px 15px;font-weight:800;cursor:pointer;transition:.2s ease;display:inline-flex;align-items:center;gap:8px}.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--teal);color:#fff}.btn-secondary{background:rgba(255,255,255,.11);color:#fff;border:1px solid rgba(255,255,255,.22)}.btn-danger{background:#fff0f3;color:var(--danger)}
+.figure-toggle[aria-pressed="true"]{background:#fff;color:var(--navy);border-color:#fff}.figures-hidden .figure-value{filter:blur(8px);user-select:none}.figures-hidden input[type=number]{color:transparent;text-shadow:0 0 8px rgba(16,42,67,.85);caret-color:var(--teal)}
+.mini-calculator{position:fixed;left:14px;top:170px;width:260px;z-index:15;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 12px 34px rgba(16,42,67,.14)}.mini-calculator h3{margin:0;color:var(--navy);font-size:.9rem;text-transform:uppercase}.calc-drag-handle{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;padding:4px 2px 8px;cursor:grab;user-select:none;touch-action:none}.calc-drag-handle:active{cursor:grabbing}.calc-drag-icon{color:var(--muted);font-size:1.05rem;letter-spacing:-.12em}.mini-calculator.dragging{opacity:.96;box-shadow:0 18px 48px rgba(16,42,67,.24);transition:none}.calc-display{height:54px;text-align:right;font-weight:900;font-size:1.25rem;margin-bottom:12px;padding:10px 12px}.calc-keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.calc-key{border:0;border-radius:9px;min-height:45px;padding:10px 4px;background:#edf3f7;color:var(--navy);font-size:.95rem;font-weight:850;cursor:pointer}.calc-key.operator{background:#e5f7f5;color:var(--teal-dark)}.calc-key.equals{background:var(--teal);color:#fff}.completed-cell{text-align:center}.completed-cell input{width:18px;height:18px;accent-color:var(--teal)}.owed-completed td{opacity:.62}.owed-completed td:first-child input{text-decoration:line-through}.receipt-cell{min-width:150px}.receipt-upload{display:none;width:100%;border:0;border-radius:8px;padding:7px 9px;background:#e5f7f5;color:var(--teal-dark);font-size:.75rem;font-weight:850;cursor:pointer}.owed-completed .receipt-upload{display:block}.receipt-link{display:inline-block;margin-top:6px;color:var(--teal-dark);font-size:.75rem;font-weight:800;text-decoration:none}.receipt-status{display:block;margin-top:5px;color:var(--muted);font-size:.68rem}.receipt-file{display:none}
+.save-indicator{position:relative;z-index:1;margin-top:18px;font-size:.78rem;color:#b9cbdc;display:flex;gap:7px;align-items:center}.dot{width:8px;height:8px;background:#4ee0b7;border-radius:50%;box-shadow:0 0 0 5px rgba(78,224,183,.12)}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}.metric{background:rgba(255,255,255,.91);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.85);border-radius:18px;padding:18px;box-shadow:0 8px 25px rgba(16,42,67,.07)}
+.metric-label{color:var(--muted);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.metric-value{font-size:1.55rem;font-weight:900;margin-top:7px;letter-spacing:-.035em}.metric.cyan{border-top:4px solid var(--teal)}.metric.gold{border-top:4px solid var(--gold)}.metric.navy{border-top:4px solid var(--navy-2)}.metric.green{border-top:4px solid #38b48b}
+.nav{display:flex;gap:8px;background:#dfe9f1;border-radius:15px;padding:6px;margin:4px 0 18px;position:sticky;top:8px;z-index:20;box-shadow:0 8px 20px rgba(16,42,67,.07)}
+.tab-btn{flex:1;border:0;background:transparent;color:#52677c;border-radius:10px;padding:12px;font-weight:850;cursor:pointer}.tab-btn.active{background:#fff;color:var(--navy);box-shadow:0 4px 14px rgba(16,42,67,.10)}
+.tab{display:none}.tab.active{display:block}.layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px}.stack{display:grid;gap:16px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 7px 24px rgba(16,42,67,.055)}.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 20px;border-bottom:1px solid var(--line)}
+.card-title{display:flex;align-items:center;gap:11px;font-weight:900;color:var(--navy);font-size:1rem}.icon{width:35px;height:35px;border-radius:10px;background:#e5f7f5;color:var(--teal-dark);display:grid;place-items:center;font-size:1.05rem}.sub-badge{font-size:.75rem;color:var(--muted);font-weight:750}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:650px}th{text-align:left;padding:11px 15px;background:#f7fafc;color:#6c7e91;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase}td{padding:8px 10px;border-top:1px solid #edf2f6}
+input{width:100%;border:1px solid #d8e2ea;border-radius:9px;padding:9px 10px;background:#fbfdfe;color:var(--ink);transition:.18s}input:hover{border-color:#aebfce}input:focus{outline:0;border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(0,168,150,.12)}input[type=number]{font-variant-numeric:tabular-nums}
+.cost-input{font-weight:800;color:var(--navy)}.delete{border:0;background:transparent;color:#a5b1bd;cursor:pointer;border-radius:8px;padding:8px}.delete:hover{background:#fff0f3;color:var(--danger)}
+.card-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f8fbfc;border-top:1px solid var(--line);padding:12px 16px}.add{border:0;background:#e5f7f5;color:var(--teal-dark);padding:8px 12px;border-radius:9px;font-weight:850;cursor:pointer}.subtotal{font-weight:900;color:var(--navy)}
+.side{position:sticky;top:78px;align-self:start;display:grid;gap:16px}.total-card{background:linear-gradient(145deg,var(--navy),#174d72);color:#fff;border-radius:20px;padding:22px;box-shadow:var(--shadow)}.total-card small{color:#bcd0e0;font-weight:750}.big-total{font-size:2rem;font-weight:950;margin:7px 0 17px;letter-spacing:-.045em}.breakdown{display:grid;gap:10px}.break-row{display:flex;justify-content:space-between;color:#c9d8e7;font-size:.84rem}.break-row strong{color:#fff}.progress{height:8px;border-radius:10px;background:rgba(255,255,255,.13);overflow:hidden;margin-top:14px}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#56e1d2);width:0;transition:.3s}
+.contingency{padding:18px}.range-line{display:grid;grid-template-columns:1fr 85px;gap:10px;align-items:center}.hint{font-size:.78rem;color:var(--muted);line-height:1.45;margin-top:10px}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;padding:20px}.field label{display:block;margin-bottom:6px;color:#52677c;font-size:.76rem;font-weight:800}.results{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:0 20px 20px}.owed-results{grid-template-columns:repeat(5,1fr)}.result{border-radius:15px;padding:17px;background:#eff8f7;border:1px solid #d4efeb}.result small{color:#5d746f;font-weight:700}.result strong{display:block;font-size:1.35rem;margin-top:5px;color:var(--teal-dark)}
+.notice{margin:0 20px 20px;padding:13px 15px;border-left:4px solid var(--gold);background:#fff9eb;color:#725818;border-radius:8px;font-size:.8rem;line-height:1.5}
+.empty{text-align:center;color:var(--muted);padding:24px}.footer{text-align:center;color:#7a8c9d;font-size:.77rem;padding:24px 0 5px}
+@media(max-width:1500px){.mini-calculator{left:auto;right:14px;top:auto;bottom:14px;width:240px}}
+@media(max-width:950px){.summary{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.side{position:static}.form-grid,.results,.owed-results{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.mini-calculator{position:fixed;left:auto;right:10px;top:auto;bottom:10px;width:min(360px,calc(100vw - 20px));max-width:none;margin:0;z-index:30}.app{padding:10px}.hero{padding:22px 18px;border-radius:18px}.summary{grid-template-columns:1fr 1fr;gap:9px}.metric{padding:14px}.metric-value{font-size:1.18rem}.nav{top:4px}.tab-btn{font-size:.8rem;padding:11px 5px}.form-grid,.results,.owed-results{grid-template-columns:1fr}.card-head{padding:14px}.actions{width:100%}.actions .btn{flex:1;justify-content:center}}
+@media print{body{background:#fff}.app{max-width:none;padding:0}.actions,.nav,.add,.delete,.save-indicator{display:none!important}.tab{display:block!important}.layout{grid-template-columns:1fr}.side{position:static}.card,.hero,.metric{box-shadow:none;break-inside:avoid}}
+</style>
+
+<style id="access-gate-style">
+#access-gate{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#081b2c 0%,#102a43 52%,#0b5d57 100%);font-family:Inter,"Segoe UI",Arial,sans-serif}
+.access-panel{width:min(430px,100%);background:rgba(255,255,255,.97);border:1px solid rgba(255,255,255,.5);border-radius:24px;padding:30px;box-shadow:0 30px 80px rgba(0,0,0,.32);text-align:center}
+.access-mark{width:58px;height:58px;margin:0 auto 16px;border-radius:18px;display:grid;place-items:center;background:#e5f7f5;color:#007f73;font-size:1.5rem}
+.access-panel h2{margin:0 0 8px;color:#102a43;font-size:1.55rem}.access-panel p{margin:0 0 20px;color:#64748b;line-height:1.5}
+.access-panel input{width:100%;padding:13px 14px;border:1px solid #cdd9e3;border-radius:11px;text-align:center;font-size:1.08rem;letter-spacing:.12em;background:#f8fbfc}
+.access-panel input:focus{outline:0;border-color:#00a896;box-shadow:0 0 0 4px rgba(0,168,150,.13);background:#fff}
+.access-submit{width:100%;margin-top:12px;border:0;border-radius:11px;padding:13px;background:#00a896;color:#fff;font-weight:800;cursor:pointer}.access-submit:hover{background:#007f73}
+.access-error{min-height:20px;margin-top:10px!important;margin-bottom:0!important;color:#dc4c64!important;font-size:.82rem}
+body.locked{overflow:hidden}body.locked>main{filter:blur(8px);pointer-events:none;user-select:none}
+</style>
+</head>
+<body class="locked">
+<div id="access-gate" role="dialog" aria-modal="true" aria-labelledby="access-title">
+  <form class="access-panel" onsubmit="return unlockPlanner(event)">
+    <div class="access-mark">&#128274;</div>
+    <h2 id="access-title">Private Planner</h2>
+    <p>Enter the access code to open the self-build finance planner.</p>
+    <input id="access-code" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Access code" aria-label="Access code" autofocus>
+    <button class="access-submit" type="submit">Unlock planner</button>
+    <p class="access-error" id="access-error" role="alert"></p>
+  </form>
+</div>
+<aside class="mini-calculator" aria-label="Calculator">
+<div class="calc-drag-handle" id="calc-drag-handle" title="Drag to move. Double-click to reset position"><h3>Calculator</h3><span class="calc-drag-icon" aria-hidden="true">⠿</span></div>
+<input id="calc-display" class="calc-display figure-value" type="text" inputmode="decimal" placeholder="0" aria-label="Calculator display" autocomplete="off">
+<div class="calc-keys">
+<button class="calc-key" type="button" onclick="calcClear()">C</button>
+<button class="calc-key" type="button" onclick="calcBackspace()">⌫</button>
+<button class="calc-key operator" type="button" onclick="calcInput('(')">(</button>
+<button class="calc-key operator" type="button" onclick="calcInput(')')">)</button>
+<button class="calc-key" type="button" onclick="calcInput('7')">7</button>
+<button class="calc-key" type="button" onclick="calcInput('8')">8</button>
+<button class="calc-key" type="button" onclick="calcInput('9')">9</button>
+<button class="calc-key operator" type="button" onclick="calcInput('/')">÷</button>
+<button class="calc-key" type="button" onclick="calcInput('4')">4</button>
+<button class="calc-key" type="button" onclick="calcInput('5')">5</button>
+<button class="calc-key" type="button" onclick="calcInput('6')">6</button>
+<button class="calc-key operator" type="button" onclick="calcInput('*')">×</button>
+<button class="calc-key" type="button" onclick="calcInput('1')">1</button>
+<button class="calc-key" type="button" onclick="calcInput('2')">2</button>
+<button class="calc-key" type="button" onclick="calcInput('3')">3</button>
+<button class="calc-key operator" type="button" onclick="calcInput('-')">−</button>
+<button class="calc-key" type="button" onclick="calcInput('0')">0</button>
+<button class="calc-key" type="button" onclick="calcInput('.')">.</button>
+<button class="calc-key equals" type="button" onclick="calcEquals()">=</button>
+<button class="calc-key operator" type="button" onclick="calcInput('+')">+</button>
+</div></aside><main class="app">
+<section class="hero"><div class="hero-row"><div><span class="eyebrow">◆ Personal finance workspace</span><h1>Self-Build Finance Planner</h1><p>Plan your complete build, stress-test contingency and calculate mortgage repayments in one private offline dashboard.</p></div><div class="actions"><button id="figure-toggle" class="btn btn-secondary figure-toggle" type="button" aria-pressed="false" onclick="toggleFigures()">👁 Hide figures</button><button class="btn btn-primary" onclick="saveData()">💾 Save</button><button class="btn btn-secondary" onclick="downloadFile()">⬇ Export HTML</button><button class="btn btn-secondary" onclick="window.print()">🖨 Print</button><button class="btn btn-secondary" onclick="resetData()">↺ Reset</button></div></div><div class="save-indicator"><span class="dot"></span><span id="save-status">Audited totals version 4. Ready. Changes save automatically.</span></div></section>
+<section class="summary"><div class="metric cyan"><div class="metric-label">Base build cost</div><div class="metric-value" id="dash-base">€0</div></div><div class="metric gold"><div class="metric-label">Contingency</div><div class="metric-value" id="dash-cont">€0</div></div><div class="metric navy"><div class="metric-label">Total budget</div><div class="metric-value" id="dash-total">€0</div></div><div class="metric green"><div class="metric-label">Monthly repayment</div><div class="metric-value" id="dash-monthly">€0</div></div></section>
+<nav class="nav"><button class="tab-btn active" data-tab="build" onclick="showTab('build',this)">🏗 Build Budget</button><button class="tab-btn" data-tab="mortgage" onclick="showTab('mortgage',this)">🏦 Mortgage</button><button class="tab-btn" data-tab="funds" onclick="showTab('funds',this)">💶 My Funds</button><button class="tab-btn" data-tab="owed" onclick="showTab('owed',this)">🤝 Money Owed</button></nav>
+<section id="build" class="tab active"><div class="layout"><div class="stack" id="cost-sections"></div><aside class="side"><div class="total-card"><small>TOTAL PROJECT BUDGET</small><div class="big-total" id="grand-total">€0</div><div class="breakdown"><div class="break-row"><span>Site & legal</span><strong id="side-site">€0</strong></div><div class="break-row"><span>Core build</span><strong id="side-build">€0</strong></div><div class="break-row"><span>Interiors</span><strong id="side-interior">€0</strong></div><div class="break-row"><span>Extras</span><strong id="side-extra">€0</strong></div><div class="break-row"><span>Contingency</span><strong id="side-cont">€0</strong></div></div><div class="progress"><span id="cont-progress"></span></div></div><div class="card"><div class="card-head"><div class="card-title"><span class="icon">⚠</span>Contingency</div></div><div class="contingency"><div class="range-line"><input type="range" min="0" max="25" step="1" id="cont-range" value="10" oninput="syncCont(this.value)"><input type="number" min="0" max="100" id="cont-pct" value="10" oninput="syncCont(this.value)"></div><div class="hint">A contingency reserve helps absorb unforeseen changes. Adjust this percentage to match your own risk tolerance.</div></div></div></aside></div></section>
+<section id="mortgage" class="tab"><div class="stack"><div class="card"><div class="card-head"><div class="card-title"><span class="icon">⌂</span>Mortgage calculator</div><span class="sub-badge">Standard amortisation estimate</span></div><div class="form-grid"><div class="field"><label>Property / build value (€)</label><input type="number" id="m-value" value="420000" oninput="calcMortgage('value')"></div><div class="field"><label>Deposit / equity (€)</label><input type="number" id="m-deposit" value="70000" oninput="calcMortgage('deposit')"></div><div class="field"><label>Mortgage amount (€)</label><input type="number" id="m-amount" value="350000" oninput="calcMortgage('amount')"></div><div class="field"><label>Interest rate (% APR)</label><input type="number" step="0.01" id="m-rate" value="3.8" oninput="calcMortgage()"></div><div class="field"><label>Term (years)</label><input type="number" id="m-term" value="30" oninput="calcMortgage()"></div><div class="field"><label>Fixed period (years)</label><input type="number" id="m-fixed" value="5"></div></div><div class="results"><div class="result"><small>Monthly repayment</small><strong id="m-monthly">€0</strong></div><div class="result"><small>Total repaid</small><strong id="m-total">€0</strong></div><div class="result"><small>Total interest</small><strong id="m-interest">€0</strong></div></div><div class="notice">Illustrative estimate only. It excludes fees, insurance, lender conditions and future rate changes.</div></div><div class="card"><div class="card-head"><div class="card-title"><span class="icon">▤</span>Annual repayment schedule</div><span class="sub-badge" id="ltv-badge">LTV 0%</span></div><div class="table-wrap"><table><thead><tr><th>Year</th><th>Opening balance</th><th>Interest</th><th>Principal</th><th>Closing balance</th></tr></thead><tbody id="amort-body"></tbody></table></div></div></div></section>
+<section id="funds" class="tab"><div class="stack"><div class="card"><div class="card-head"><div class="card-title"><span class="icon">€</span>My Funds</div><span class="sub-badge">Money available toward your project</span></div><div class="results" style="padding-top:20px"><div class="result"><small>Total funds available</small><strong id="funds-total">€0</strong></div><div class="result"><small>Number of money sources</small><strong id="funds-count">0</strong></div><div class="result"><small>Budget still to fund</small><strong id="funds-gap">€0</strong></div></div><div class="notice">Enter each place your money is held or expected from. Examples include savings, current accounts, Help to Buy, gifts, cashback or other funds.</div><div class="table-wrap"><table><thead><tr><th style="width:34%">Money source</th><th style="width:24%">Amount (€)</th><th>Notes</th><th></th></tr></thead><tbody id="body-funds"></tbody></table></div><div class="card-foot"><button type="button" class="add" onclick="addFundRow()">＋ Add money source</button><div class="subtotal">Total: <span id="funds-total-foot">€0</span></div></div></div><datalist id="fund-source-options"><option value="Savings"><option value="Current account"><option value="Help to Buy"><option value="Gift"><option value="Cashback"><option value="Sale proceeds"><option value="Other"></datalist></div></section>
+<section id="owed" class="tab"><div class="stack"><div class="card"><div class="card-head"><div class="card-title"><span class="icon">🤝</span>Money I Owe</div><span class="sub-badge">Editable amounts owed to people and suppliers</span></div><div class="results owed-results" style="padding-top:20px"><div class="result"><small>Total committed (paid + unpaid)</small><strong id="owed-total" class="figure-value">€0</strong></div><div class="result"><small>People / suppliers</small><strong id="owed-count">0</strong></div><div class="result"><small>Money paid</small><strong id="owed-paid" class="figure-value">€0</strong></div><div class="result"><small>Remaining to pay</small><strong id="remaining-to-pay" class="figure-value">€0</strong></div><div class="result"><small>Pat's Extras included in total</small><strong id="pat-extras-in-main" class="figure-value">€0</strong></div></div><div id="owed-reconciliation" class="notice" style="margin-top:0;border-left-color:var(--teal)">Checking totals...</div><div class="table-wrap"><table><thead><tr><th>Person / supplier</th><th>Amount owed (€)</th><th>Notes</th><th>Completed</th><th>Receipt</th><th></th></tr></thead><tbody id="body-owed"></tbody></table></div><div class="card-foot"><button type="button" class="add" onclick="addOwedRow()">＋ Add person or supplier</button><div class="subtotal">Main list: <span id="main-owed-subtotal" class="figure-value">€0</span> &nbsp; + &nbsp; Pat's Extras: <span id="pat-extras-footer" class="figure-value">€0</span> &nbsp; = &nbsp; Combined total: <span id="owed-total-foot" class="figure-value">€0</span></div></div></div><div class="card"><div class="card-head"><div class="card-title"><span class="icon">＋</span>Pat's Extras</div><span class="sub-badge">Itemised extras owed to Pat</span></div><div class="table-wrap"><table><thead><tr><th style="width:30%">Item</th><th style="width:20%">Amount (€)</th><th>Notes</th><th>Completed</th><th></th></tr></thead><tbody id="body-pat-extras"></tbody></table></div><div class="card-foot"><button type="button" class="add" onclick="addPatExtraRow()">＋ Add extra item</button><div class="subtotal">Pat's Extras total: <span id="pat-extras-total" class="figure-value">€0</span></div></div></div></div></section>
+<div class="footer">Your information stays in this browser unless you export the file.</div>
+</main>
+<script>
+const initial={
+ costs:{
+  site:[['Site / land purchase',24000,'€24,000 paid of €61,000'],['Stamp duty',0,'Paid, refund expected'],['Loan - S',5000,'€5,000 of €10,000'],['Loan - A',1000,'€1,500 of €2,500'],['Solicitor',3999,'']],
+  build:[['Main construction contract',305000,'Original price']],
+  interior:[['Bathroom',2000,''],['Kitchen',3000,''],['Flooring',4000,''],['Appliances',5000,''],['Landscaping',1200,'']],
+  extra:[['Additional bathroom',2500,'Extra'],['Velux windows',2500,'Extra'],['ESB connection',4788,'Extra'],['Well',5300,'Extra'],['Windows upgrade',2800,'Extra'],['Groundworks',11722,'Extra']]
+ },
+ funds:[['Savings',0,''],['Current account',0,''],['Help to Buy',0,''],['Other',0,'']],
+ owed:[['Loan S',0,'',false,''],['Loan A',0,'',false,''],['Pat Builder',0,'Cost of construction and extras',false,'']],
+ patExtras:[['Windows',0,'',false],['Doors',0,'',false]]
+};
+const sectionMeta={site:['Site & Legal','🌐'],build:['Core Build','▦'],interior:['Interiors & Finishes','◇'],extra:['Extras & Upgrades','＋']};
+const fmt=n=>new Intl.NumberFormat('en-IE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number.isFinite(+n)?+n:0);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function renderCosts(data=initial.costs){const host=document.getElementById('cost-sections');host.innerHTML='';Object.keys(sectionMeta).forEach(key=>{const [title,icon]=sectionMeta[key];host.insertAdjacentHTML('beforeend',`<div class="card"><div class="card-head"><div class="card-title"><span class="icon">${icon}</span>${title}</div><span class="sub-badge" id="count-${key}"></span></div><div class="table-wrap"><table><thead><tr><th style="width:42%">Item</th><th style="width:22%">Cost (€)</th><th>Notes</th><th></th></tr></thead><tbody id="body-${key}"></tbody></table></div><div class="card-foot"><button class="add" onclick="addCostRow('${key}')">＋ Add item</button><div class="subtotal">Subtotal: <span id="sub-${key}">€0</span></div></div></div>`);(data[key]||[]).forEach(r=>addCostRow(key,r,false));});recalc()}
+function addCostRow(key,row=['',0,''],doCalc=true){const body=document.getElementById('body-'+key),tr=document.createElement('tr');tr.innerHTML=`<td><input aria-label="Item" value="${esc(row[0])}" placeholder="New item"></td><td><input aria-label="Cost" type="number" class="cost-input" value="${esc(row[1])}" placeholder="0" oninput="recalc()"></td><td><input aria-label="Notes" value="${esc(row[2])}" placeholder="Add a note"></td><td><button class="delete" title="Delete row" onclick="deleteRow(this)">✕</button></td>`;body.appendChild(tr);if(doCalc)recalc()}
+function renderFunds(data=initial.funds){const body=document.getElementById('body-funds');body.innerHTML='';(data||[]).forEach(r=>addFundRow(r,false));calcFunds()}
+function addFundRow(row=['',0,''],doCalc=true){const tr=document.createElement('tr');tr.innerHTML=`<td><input aria-label="Money source" list="fund-source-options" value="${esc(row[0])}" placeholder="e.g. Savings"></td><td><input aria-label="Amount" type="number" min="0" step="100" class="fund-value" value="${esc(row[1])}" placeholder="0" oninput="calcFunds()"></td><td><input aria-label="Notes" value="${esc(row[2])}" placeholder="Optional note"></td><td><button type="button" class="delete" title="Delete row" onclick="deleteFundRow(this)">✕</button></td>`;document.getElementById('body-funds').appendChild(tr);if(doCalc)calcFunds()}
+function deleteFundRow(btn){btn.closest('tr').remove();calcFunds();scheduleSave()}
+function renderOwed(data=initial.owed){const body=document.getElementById('body-owed');body.innerHTML='';(data||[]).forEach(r=>addOwedRow(r,false));calcOwed()}
+function renderPatExtras(data=initial.patExtras){const body=document.getElementById('body-pat-extras');body.innerHTML='';(data||[]).forEach(r=>addPatExtraRow(r,false));calcOwed()}
+function addPatExtraRow(row=['',0,'',false],doCalc=true){const tr=document.createElement('tr'),completed=row[3]===true||row[3]==='true';tr.innerHTML=`<td><input value="${esc(row[0])}" placeholder="e.g. Windows"></td><td><input type="number" min="0" class="pat-extra-value" value="${esc(row[1])}" oninput="calcOwed()"></td><td><input value="${esc(row[2])}" placeholder="Optional note"></td><td class="completed-cell"><input type="checkbox" class="pat-extra-complete" ${completed?'checked':''} onchange="calcOwed()"></td><td><button type="button" class="delete" onclick="deletePatExtraRow(this)">✕</button></td>`;document.getElementById('body-pat-extras').appendChild(tr);if(doCalc)calcOwed()}
+function deletePatExtraRow(btn){btn.closest('tr').remove();calcOwed();scheduleSave()}
+function addOwedRow(row=['',0,'',false,''],doCalc=true){const tr=document.createElement('tr'),completed=row[3]===true||row[3]==='true',receipt=row[4]||'';tr.innerHTML=`<td><input value="${esc(row[0])}" placeholder="e.g. Builder" oninput="calcOwed()"></td><td><input type="number" min="0" class="owed-value" value="${esc(row[1])}" oninput="calcOwed()"></td><td><input value="${esc(row[2])}" placeholder="Optional note"></td><td class="completed-cell"><input type="checkbox" class="owed-complete" ${completed?'checked':''} onchange="calcOwed()"></td><td class="receipt-cell"><input type="hidden" class="receipt-url" value="${esc(receipt)}"><input type="file" class="receipt-file" accept=".pdf,image/jpeg,image/png,image/webp" onchange="uploadReceipt(this)"><button type="button" class="receipt-upload" onclick="this.previousElementSibling.click()">Upload receipt</button><a class="receipt-link" href="${esc(receipt)}" target="_blank" rel="noopener" style="display:${receipt?'inline-block':'none'}">View receipt</a><span class="receipt-status"></span></td><td><button type="button" class="delete" onclick="deleteOwedRow(this)">✕</button></td>`;document.getElementById('body-owed').appendChild(tr);if(doCalc)calcOwed()}
+const GITHUB_UPLOAD = {
+  owner: 'jamesrussell98',
+  repo: 'selfbuild',
+  branch: 'main',
+  folder: 'receipts',
+  token: 'ghp_ZXQnPauMUjGfVLh2Iz02dOOOUP4tCy2bWcA'
+};
+function safeFilePart(v){return String(v||'receipt').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'receipt'}
+function fileToBase64(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=reject;r.readAsDataURL(file)})}
+async function uploadReceipt(input){const tr=input.closest('tr'),status=tr.querySelector('.receipt-status'),button=tr.querySelector('.receipt-upload'),link=tr.querySelector('.receipt-link'),urlInput=tr.querySelector('.receipt-url'),file=input.files[0];if(!tr.querySelector('.owed-complete').checked){status.textContent='Select Completed before uploading.';input.value='';return}if(!file)return;if (
+  GITHUB_UPLOAD.token === 'Insert token here' ||
+  GITHUB_UPLOAD.token === 'ghp_ZXQnPauMUjGfVLh2Iz02dOOOUP4tCy2bWcA'
+) {
+  status.textContent = 'Replace the example token with a valid testing token first.';
+  input.value = '';
+  return;
+}if(file.size>10*1024*1024){status.textContent='Maximum file size is 10 MB.';return}button.disabled=true;button.textContent='Uploading...';try{const person=tr.cells[0].querySelector('input').value,date=new Date().toISOString().slice(0,10),ext=(file.name.split('.').pop()||'file').replace(/[^a-z0-9]/gi,''),path=`${GITHUB_UPLOAD.folder}/${safeFilePart(person)}-${date}-${Date.now()}.${ext}`,content=await fileToBase64(file),res=await fetch(`https://api.github.com/repos/${GITHUB_UPLOAD.owner}/${GITHUB_UPLOAD.repo}/contents/${path}`,{method:'PUT',headers:{Accept:'application/vnd.github+json',Authorization:`Bearer ${GITHUB_UPLOAD.token}`,'X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},body:JSON.stringify({message:`Upload receipt for ${person||'item'}`,content,branch:GITHUB_UPLOAD.branch})}),data=await res.json();if(!res.ok)throw new Error(data.message||`Upload failed (${res.status})`);urlInput.value=data.content.html_url;link.href=urlInput.value;link.style.display='inline-block';status.textContent='Receipt uploaded.';scheduleSave()}catch(e){status.textContent=e.message||'Upload failed.'}finally{button.disabled=false;button.textContent=urlInput.value?'Replace receipt':'Upload receipt';input.value=''}}
+function deleteOwedRow(btn){btn.closest('tr').remove();calcOwed();scheduleSave()}
+function moneyValue(input){const value=Number(input&&input.value);return Number.isFinite(value)&&value>0?value:0}
+function calcOwed(){
+ const rows=[...document.querySelectorAll('#body-owed tr')];
+ const extraRows=[...document.querySelectorAll('#body-pat-extras tr')];
+ let mainPaid=0,mainUnpaid=0,extrasPaid=0,extrasUnpaid=0;
+ rows.forEach(tr=>{const amount=moneyValue(tr.querySelector('.owed-value'));const done=tr.querySelector('.owed-complete').checked;if(done)mainPaid+=amount;else mainUnpaid+=amount;tr.classList.toggle('owed-completed',done);const upload=tr.querySelector('.receipt-upload');if(upload)upload.textContent=tr.querySelector('.receipt-url').value?'Replace receipt':'Upload receipt'});
+ extraRows.forEach(tr=>{const amount=moneyValue(tr.querySelector('.pat-extra-value'));const done=tr.querySelector('.pat-extra-complete').checked;if(done)extrasPaid+=amount;else extrasUnpaid+=amount;tr.classList.toggle('owed-completed',done)});
+ const mainTotal=mainPaid+mainUnpaid;
+ const extrasTotal=extrasPaid+extrasUnpaid;
+ const paid=mainPaid+extrasPaid;
+ const unpaid=mainUnpaid+extrasUnpaid;
+ const total=paid+unpaid;
+ document.getElementById('owed-total').textContent=fmt(total);
+ document.getElementById('owed-total-foot').textContent=fmt(total);
+ document.getElementById('main-owed-subtotal').textContent=fmt(mainTotal);
+ document.getElementById('pat-extras-footer').textContent=fmt(extrasTotal);
+ document.getElementById('owed-count').textContent=rows.filter(tr=>tr.cells[0].querySelector('input').value.trim()||moneyValue(tr.querySelector('.owed-value'))>0).length;
+ document.getElementById('owed-paid').textContent=fmt(paid);
+ document.getElementById('remaining-to-pay').textContent=fmt(unpaid);
+ document.getElementById('pat-extras-total').textContent=fmt(extrasTotal);
+ document.getElementById('pat-extras-in-main').textContent=fmt(extrasTotal);
+ const check=document.getElementById('owed-reconciliation');
+ const balanced=Math.abs(total-(paid+unpaid))<0.005;
+ check.textContent=balanced?`Totals balanced: ${fmt(paid)} paid + ${fmt(unpaid)} remaining = ${fmt(total)} committed. Pat's Extras of ${fmt(extrasTotal)} are already included once in these figures.`:'Totals are not balanced. Please review the entered amounts.';
+ check.style.borderLeftColor=balanced?'var(--teal)':'var(--danger)';
+ scheduleSave()
+}
+function calcFunds(){const total=sumBody('body-funds','.fund-value'),count=document.querySelectorAll('#body-funds tr').length,budget=+String(document.getElementById('grand-total').textContent).replace(/[^0-9.-]/g,'')||0;document.getElementById('funds-total').textContent=fmt(total);document.getElementById('funds-total-foot').textContent=fmt(total);document.getElementById('funds-count').textContent=count;document.getElementById('funds-gap').textContent=fmt(Math.max(0,budget-total));scheduleSave()}
+function deleteRow(btn){btn.closest('tr').remove();recalc();scheduleSave()}
+function sumBody(id,selector){return [...document.querySelectorAll(`#${id} ${selector}`)].reduce((s,x)=>s+(+x.value||0),0)}
+function recalc(){let base=0;Object.keys(sectionMeta).forEach(k=>{const v=sumBody('body-'+k,'.cost-input');base+=v;document.getElementById('sub-'+k).textContent=fmt(v);document.getElementById('side-'+k).textContent=fmt(v);document.getElementById('count-'+k).textContent=document.querySelectorAll(`#body-${k} tr`).length+' items'});const pct=+document.getElementById('cont-pct').value||0,cont=base*pct/100,total=base+cont;document.getElementById('side-cont').textContent=fmt(cont);document.getElementById('grand-total').textContent=fmt(total);document.getElementById('dash-base').textContent=fmt(base);document.getElementById('dash-cont').textContent=fmt(cont);document.getElementById('dash-total').textContent=fmt(total);document.getElementById('cont-progress').style.width=Math.min(pct*4,100)+'%';calcFunds();scheduleSave()}
+function syncCont(v){v=Math.max(0,Math.min(100,+v||0));document.getElementById('cont-pct').value=v;document.getElementById('cont-range').value=Math.min(v,25);recalc()}
+function showTab(id,btn){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');btn.classList.add('active')}
+function calcMortgage(changed){const val=+document.getElementById('m-value').value||0,dep=+document.getElementById('m-deposit').value||0,amtEl=document.getElementById('m-amount');if(changed==='value'||changed==='deposit')amtEl.value=Math.max(0,val-dep);const P=+amtEl.value||0,annual=+document.getElementById('m-rate').value||0,years=Math.max(0,+document.getElementById('m-term').value||0),r=annual/1200,n=Math.round(years*12);let monthly=n?(r?P*r/(1-Math.pow(1+r,-n)):P/n):0,total=monthly*n;document.getElementById('m-monthly').textContent=fmt(monthly);document.getElementById('dash-monthly').textContent=fmt(monthly);document.getElementById('m-total').textContent=fmt(total);document.getElementById('m-interest').textContent=fmt(total-P);document.getElementById('ltv-badge').textContent='LTV '+(val?Math.round(P/val*100):0)+'%';let bal=P,body=document.getElementById('amort-body');body.innerHTML='';for(let y=1;y<=years&&bal>.01;y++){let opening=bal,interest=0,principal=0;for(let m=0;m<12&&bal>.01;m++){let i=bal*r,p=Math.min(monthly-i,bal);interest+=i;principal+=p;bal-=p}body.insertAdjacentHTML('beforeend',`<tr><td>${y}</td><td>${fmt(opening)}</td><td>${fmt(interest)}</td><td>${fmt(principal)}</td><td>${fmt(Math.max(0,bal))}</td></tr>`)}scheduleSave()}
+function gatherRows(id){return [...document.querySelectorAll('#'+id+' tr')].map(tr=>id==='body-owed'?[tr.cells[0].querySelector('input').value,tr.querySelector('.owed-value').value,tr.cells[2].querySelector('input').value,tr.querySelector('.owed-complete').checked,tr.querySelector('.receipt-url').value]:id==='body-pat-extras'?[tr.cells[0].querySelector('input').value,tr.querySelector('.pat-extra-value').value,tr.cells[2].querySelector('input').value,tr.querySelector('.pat-extra-complete').checked]:[...tr.querySelectorAll('input')].map(i=>i.value))}
+function collect(){return{costs:Object.fromEntries(Object.keys(sectionMeta).map(k=>[k,gatherRows('body-'+k)])),funds:gatherRows('body-funds'),owed:gatherRows('body-owed'),patExtras:gatherRows('body-pat-extras'),fields:Object.fromEntries([...document.querySelectorAll('input[id]')].map(i=>[i.id,i.value]))}}
+let timer;function scheduleSave(){clearTimeout(timer);timer=setTimeout(()=>saveData(true),500)}
+function saveData(auto=false){localStorage.setItem('selfBuildPlannerV4',JSON.stringify(collect()));document.getElementById('save-status').textContent=(auto?'Autosaved ':'Saved ')+'at '+new Date().toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})}
+function loadData(){try{const raw=localStorage.getItem('selfBuildPlannerV4')||localStorage.getItem('selfBuildPlannerV3');const d=JSON.parse(raw);if(!d)return false;renderCosts(d.costs);renderFunds(d.funds);renderOwed(d.owed||initial.owed);renderPatExtras(d.patExtras||initial.patExtras);Object.entries(d.fields||{}).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v});document.getElementById('cont-range').value=Math.min(+document.getElementById('cont-pct').value||0,25);return true}catch(e){return false}}
+function resetData(){if(!confirm('Reset all planner data to the redesigned defaults?'))return;localStorage.removeItem('selfBuildPlannerV4');localStorage.removeItem('selfBuildPlannerV3');location.reload()}
+function downloadFile(){saveData();document.querySelectorAll('input').forEach(i=>{i.setAttribute('value',i.value);if(i.type==='checkbox'){if(i.checked)i.setAttribute('checked','');else i.removeAttribute('checked')}});const blob=new Blob(['<!DOCTYPE html>\n'+document.documentElement.outerHTML],{type:'text/html'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='self-build-finance-planner-audited-v4.html';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function getCalcDisplay(){return document.getElementById('calc-display')}
+function calcInput(v){const d=getCalcDisplay();if(d.value==='Error'||d.dataset.justCalculated==='1'){d.value='';d.dataset.justCalculated='0'}const start=d.selectionStart??d.value.length,end=d.selectionEnd??d.value.length;d.value=d.value.slice(0,start)+v+d.value.slice(end);const pos=start+v.length;d.focus();d.setSelectionRange(pos,pos)}
+function calcClear(){const d=getCalcDisplay();d.value='';d.dataset.justCalculated='0';d.focus()}
+function calcBackspace(){const d=getCalcDisplay();if(d.value==='Error'){calcClear();return}const start=d.selectionStart??d.value.length,end=d.selectionEnd??d.value.length;if(start!==end)d.value=d.value.slice(0,start)+d.value.slice(end);else if(start>0)d.value=d.value.slice(0,start-1)+d.value.slice(end);const pos=start===end?Math.max(0,start-1):start;d.focus();d.setSelectionRange(pos,pos)}
+function calcEquals(){const d=getCalcDisplay();try{let expression=d.value.trim();if(!expression)return;if(!/^[0-9+\-*/().\s]+$/.test(expression))throw new Error('Invalid characters');const result=Function('"use strict";return ('+expression+')')();if(typeof result!=='number'||!Number.isFinite(result))throw new Error('Invalid result');d.value=String(Math.round((result+Number.EPSILON)*1e10)/1e10);d.dataset.justCalculated='1'}catch(e){d.value='Error';d.dataset.justCalculated='1'}d.focus()}
+function clampCalcPosition(left,top){const calc=document.querySelector('.mini-calculator'),pad=8,maxLeft=Math.max(pad,window.innerWidth-calc.offsetWidth-pad),maxTop=Math.max(pad,window.innerHeight-calc.offsetHeight-pad);return{left:Math.min(Math.max(pad,left),maxLeft),top:Math.min(Math.max(pad,top),maxTop)}}
+function positionCalculator(left,top,save=true){const calc=document.querySelector('.mini-calculator'),p=clampCalcPosition(left,top);calc.style.left=p.left+'px';calc.style.top=p.top+'px';calc.style.right='auto';calc.style.bottom='auto';if(save)localStorage.setItem('selfBuildCalcPosition',JSON.stringify(p))}
+function resetCalculatorPosition(){const calc=document.querySelector('.mini-calculator');calc.style.left='';calc.style.top='';calc.style.right='';calc.style.bottom='';localStorage.removeItem('selfBuildCalcPosition')}
+function initCalculatorDrag(){const calc=document.querySelector('.mini-calculator'),handle=document.getElementById('calc-drag-handle');let dragging=false,offsetX=0,offsetY=0;handle.addEventListener('pointerdown',e=>{if(e.button!==undefined&&e.button!==0)return;const r=calc.getBoundingClientRect();dragging=true;offsetX=e.clientX-r.left;offsetY=e.clientY-r.top;calc.classList.add('dragging');handle.setPointerCapture(e.pointerId);e.preventDefault()});handle.addEventListener('pointermove',e=>{if(!dragging)return;positionCalculator(e.clientX-offsetX,e.clientY-offsetY,false)});function stopDrag(e){if(!dragging)return;dragging=false;calc.classList.remove('dragging');const r=calc.getBoundingClientRect();positionCalculator(r.left,r.top,true);if(handle.hasPointerCapture&&handle.hasPointerCapture(e.pointerId))handle.releasePointerCapture(e.pointerId)}handle.addEventListener('pointerup',stopDrag);handle.addEventListener('pointercancel',stopDrag);handle.addEventListener('dblclick',resetCalculatorPosition);try{const saved=JSON.parse(localStorage.getItem('selfBuildCalcPosition'));if(saved&&Number.isFinite(saved.left)&&Number.isFinite(saved.top))positionCalculator(saved.left,saved.top,false)}catch(e){localStorage.removeItem('selfBuildCalcPosition')}window.addEventListener('resize',()=>{if(calc.style.left){const r=calc.getBoundingClientRect();positionCalculator(r.left,r.top,true)}})}
+function initCalculator(){const d=getCalcDisplay();d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key==='='){e.preventDefault();calcEquals()}else if(e.key==='Escape'){e.preventDefault();calcClear()}else if(e.key==='Backspace'&&d.value==='Error'){e.preventDefault();calcClear()}else if(e.key.length===1&&!/[0-9+\-*/().\s]/.test(e.key)){e.preventDefault()}})}
+function tagFigureValues(){document.querySelectorAll('.metric-value,.big-total,.subtotal span,.break-row strong,.result strong,#amort-body td:not(:first-child)').forEach(el=>el.classList.add('figure-value'))}
+function toggleFigures(){const hidden=document.body.classList.toggle('figures-hidden'),btn=document.getElementById('figure-toggle');btn.setAttribute('aria-pressed',String(hidden));btn.textContent=hidden?'👁 Show figures':'👁 Hide figures';localStorage.setItem('selfBuildHideFigures',hidden?'1':'0')}
+function restoreFigurePreference(){if(localStorage.getItem('selfBuildHideFigures')==='1'){document.body.classList.add('figures-hidden');const btn=document.getElementById('figure-toggle');btn.setAttribute('aria-pressed','true');btn.textContent='👁 Show figures'}}
+const figureObserver=new MutationObserver(tagFigureValues);figureObserver.observe(document.querySelector('main.app'),{childList:true,subtree:true});
+initCalculator();initCalculatorDrag();renderCosts();renderFunds();renderOwed();renderPatExtras();loadData();recalc();calcMortgage();calcFunds();calcOwed();tagFigureValues();restoreFigurePreference();
+</script>
+<script id="access-gate-script">
+(function(){
+  document.body.classList.add('locked');
+  if(sessionStorage.getItem('plannerAccess')==='granted') revealPlanner();
+})();
+function revealPlanner(){
+  var gate=document.getElementById('access-gate');
+  if(gate) gate.remove();
+  document.body.classList.remove('locked');
+}
+function unlockPlanner(event){
+  event.preventDefault();
+  var input=document.getElementById('access-code');
+  var error=document.getElementById('access-error');
+  if(input.value==='128012'){
+    sessionStorage.setItem('plannerAccess','granted');
+    revealPlanner();
+  }else{
+    error.textContent='Incorrect access code. Please try again.';
+    input.value=''; input.focus();
+  }
+  return false;
+}
+</script>
+</body></html>
