@@ -41,9 +41,9 @@ input{width:100%;border:1px solid #d8e2ea;border-radius:9px;padding:9px 10px;bac
 .form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;padding:20px}.field label{display:block;margin-bottom:6px;color:#52677c;font-size:.76rem;font-weight:800}.results{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:0 20px 20px}.owed-results{grid-template-columns:repeat(4,1fr)}.result{border-radius:15px;padding:17px;background:#eff8f7;border:1px solid #d4efeb}.result small{color:#5d746f;font-weight:700}.result strong{display:block;font-size:1.35rem;margin-top:5px;color:var(--teal-dark)}
 .notice{margin:0 20px 20px;padding:13px 15px;border-left:4px solid var(--gold);background:#fff9eb;color:#725818;border-radius:8px;font-size:.8rem;line-height:1.5}
 .empty{text-align:center;color:var(--muted);padding:24px}.footer{text-align:center;color:#7a8c9d;font-size:.77rem;padding:24px 0 5px}
-@media(max-width:1500px){.mini-calculator{display:none}}
+@media(max-width:1500px){.mini-calculator{left:auto;right:10px;top:auto;bottom:10px}}
 @media(max-width:950px){.summary{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.side{position:static}.form-grid,.results,.owed-results{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:620px){.app{padding:10px}.hero{padding:22px 18px;border-radius:18px}.summary{grid-template-columns:1fr 1fr;gap:9px}.metric{padding:14px}.metric-value{font-size:1.18rem}.nav{top:4px}.tab-btn{font-size:.8rem;padding:11px 5px}.form-grid,.results,.owed-results{grid-template-columns:1fr}.card-head{padding:14px}.actions{width:100%}.actions .btn{flex:1;justify-content:center}}
+@media(max-width:620px){.mini-calculator{position:relative;left:auto;right:auto;top:auto;bottom:auto;width:100%;margin:10px auto;z-index:15}.app{padding:10px}.hero{padding:22px 18px;border-radius:18px}.summary{grid-template-columns:1fr 1fr;gap:9px}.metric{padding:14px}.metric-value{font-size:1.18rem}.nav{top:4px}.tab-btn{font-size:.8rem;padding:11px 5px}.form-grid,.results,.owed-results{grid-template-columns:1fr}.card-head{padding:14px}.actions{width:100%}.actions .btn{flex:1;justify-content:center}}
 @media print{body{background:#fff}.app{max-width:none;padding:0}.actions,.nav,.add,.delete,.save-indicator{display:none!important}.tab{display:block!important}.layout{grid-template-columns:1fr}.side{position:static}.card,.hero,.metric{box-shadow:none;break-inside:avoid}}
 </style>
 
@@ -70,7 +70,31 @@ body.locked{overflow:hidden}body.locked>main{filter:blur(8px);pointer-events:non
     <p class="access-error" id="access-error" role="alert"></p>
   </form>
 </div>
-<aside class="mini-calculator"><h3>Calculator</h3><input id="calc-display" class="calc-display figure-value" type="text" inputmode="decimal" placeholder="0"><div class="calc-keys"><button class="calc-key" type="button" onclick="calcClear()">C</button><button class="calc-key operator" type="button" onclick="calcInput(\'(\')">(</button><button class="calc-key operator" type="button" onclick="calcInput(\')\')">)</button><button class="calc-key operator" type="button" onclick="calcInput(\'/\')">/</button><button class="calc-key" type="button" onclick="calcInput(\'7\')">7</button><button class="calc-key" type="button" onclick="calcInput(\'8\')">8</button><button class="calc-key" type="button" onclick="calcInput(\'9\')">9</button><button class="calc-key operator" type="button" onclick="calcInput(\'*\')">*</button><button class="calc-key" type="button" onclick="calcInput(\'4\')">4</button><button class="calc-key" type="button" onclick="calcInput(\'5\')">5</button><button class="calc-key" type="button" onclick="calcInput(\'6\')">6</button><button class="calc-key operator" type="button" onclick="calcInput(\'-\')">-</button><button class="calc-key" type="button" onclick="calcInput(\'1\')">1</button><button class="calc-key" type="button" onclick="calcInput(\'2\')">2</button><button class="calc-key" type="button" onclick="calcInput(\'3\')">3</button><button class="calc-key operator" type="button" onclick="calcInput(\'+\')">+</button><button class="calc-key" type="button" onclick="calcInput(\'0\')">0</button><button class="calc-key" type="button" onclick="calcInput(\'.\')">.</button><button class="calc-key equals" type="button" onclick="calcEquals()">=</button></div></aside><main class="app">
+<aside class="mini-calculator" aria-label="Calculator">
+<h3>Calculator</h3>
+<input id="calc-display" class="calc-display figure-value" type="text" inputmode="decimal" placeholder="0" aria-label="Calculator display" autocomplete="off">
+<div class="calc-keys">
+<button class="calc-key" type="button" onclick="calcClear()">C</button>
+<button class="calc-key" type="button" onclick="calcBackspace()">⌫</button>
+<button class="calc-key operator" type="button" onclick="calcInput('(')">(</button>
+<button class="calc-key operator" type="button" onclick="calcInput(')')">)</button>
+<button class="calc-key" type="button" onclick="calcInput('7')">7</button>
+<button class="calc-key" type="button" onclick="calcInput('8')">8</button>
+<button class="calc-key" type="button" onclick="calcInput('9')">9</button>
+<button class="calc-key operator" type="button" onclick="calcInput('/')">÷</button>
+<button class="calc-key" type="button" onclick="calcInput('4')">4</button>
+<button class="calc-key" type="button" onclick="calcInput('5')">5</button>
+<button class="calc-key" type="button" onclick="calcInput('6')">6</button>
+<button class="calc-key operator" type="button" onclick="calcInput('*')">×</button>
+<button class="calc-key" type="button" onclick="calcInput('1')">1</button>
+<button class="calc-key" type="button" onclick="calcInput('2')">2</button>
+<button class="calc-key" type="button" onclick="calcInput('3')">3</button>
+<button class="calc-key operator" type="button" onclick="calcInput('-')">−</button>
+<button class="calc-key" type="button" onclick="calcInput('0')">0</button>
+<button class="calc-key" type="button" onclick="calcInput('.')">.</button>
+<button class="calc-key equals" type="button" onclick="calcEquals()">=</button>
+<button class="calc-key operator" type="button" onclick="calcInput('+')">+</button>
+</div></aside><main class="app">
 <section class="hero"><div class="hero-row"><div><span class="eyebrow">◆ Personal finance workspace</span><h1>Self-Build Finance Planner</h1><p>Plan your complete build, stress-test contingency and calculate mortgage repayments in one private offline dashboard.</p></div><div class="actions"><button id="figure-toggle" class="btn btn-secondary figure-toggle" type="button" aria-pressed="false" onclick="toggleFigures()">👁 Hide figures</button><button class="btn btn-primary" onclick="saveData()">💾 Save</button><button class="btn btn-secondary" onclick="downloadFile()">⬇ Export HTML</button><button class="btn btn-secondary" onclick="window.print()">🖨 Print</button><button class="btn btn-secondary" onclick="resetData()">↺ Reset</button></div></div><div class="save-indicator"><span class="dot"></span><span id="save-status">Ready. Changes save automatically.</span></div></section>
 <section class="summary"><div class="metric cyan"><div class="metric-label">Base build cost</div><div class="metric-value" id="dash-base">€0</div></div><div class="metric gold"><div class="metric-label">Contingency</div><div class="metric-value" id="dash-cont">€0</div></div><div class="metric navy"><div class="metric-label">Total budget</div><div class="metric-value" id="dash-total">€0</div></div><div class="metric green"><div class="metric-label">Monthly repayment</div><div class="metric-value" id="dash-monthly">€0</div></div></section>
 <nav class="nav"><button class="tab-btn active" data-tab="build" onclick="showTab('build',this)">🏗 Build Budget</button><button class="tab-btn" data-tab="mortgage" onclick="showTab('mortgage',this)">🏦 Mortgage</button><button class="tab-btn" data-tab="funds" onclick="showTab('funds',this)">💶 My Funds</button><button class="tab-btn" data-tab="owed" onclick="showTab('owed',this)">🤝 Money Owed</button></nav>
@@ -137,15 +161,18 @@ let timer;function scheduleSave(){clearTimeout(timer);timer=setTimeout(()=>saveD
 function saveData(auto=false){localStorage.setItem('selfBuildPlannerV3',JSON.stringify(collect()));document.getElementById('save-status').textContent=(auto?'Autosaved ':'Saved ')+'at '+new Date().toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})}
 function loadData(){try{const d=JSON.parse(localStorage.getItem('selfBuildPlannerV3'));if(!d)return false;renderCosts(d.costs);renderFunds(d.funds);renderOwed(d.owed||initial.owed);renderPatExtras(d.patExtras||initial.patExtras);Object.entries(d.fields||{}).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v});document.getElementById('cont-range').value=Math.min(+document.getElementById('cont-pct').value||0,25);return true}catch(e){return false}}
 function resetData(){if(!confirm('Reset all planner data to the redesigned defaults?'))return;localStorage.removeItem('selfBuildPlannerV3');location.reload()}
-function downloadFile(){saveData();document.querySelectorAll('input').forEach(i=>i.setAttribute('value',i.value));const blob=new Blob(['<!DOCTYPE html>\n'+document.documentElement.outerHTML],{type:'text/html'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='self-build-finance-planner.html';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function calcInput(v){const d=document.getElementById('calc-display');d.value+=v}
-function calcClear(){document.getElementById('calc-display').value=''}
-function calcEquals(){const d=document.getElementById('calc-display');try{if(!/^[0-9+\-*/().\s]+$/.test(d.value))throw 0;d.value=String(Function('return ('+d.value+')')())}catch(e){d.value='Error'}}
+function downloadFile(){saveData();document.querySelectorAll('input').forEach(i=>i.setAttribute('value',i.value));const blob=new Blob(['<!DOCTYPE html>\n'+document.documentElement.outerHTML],{type:'text/html'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='self-build-finance-planner-calculator-fixed.html';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function getCalcDisplay(){return document.getElementById('calc-display')}
+function calcInput(v){const d=getCalcDisplay();if(d.value==='Error'||d.dataset.justCalculated==='1'){d.value='';d.dataset.justCalculated='0'}const start=d.selectionStart??d.value.length,end=d.selectionEnd??d.value.length;d.value=d.value.slice(0,start)+v+d.value.slice(end);const pos=start+v.length;d.focus();d.setSelectionRange(pos,pos)}
+function calcClear(){const d=getCalcDisplay();d.value='';d.dataset.justCalculated='0';d.focus()}
+function calcBackspace(){const d=getCalcDisplay();if(d.value==='Error'){calcClear();return}const start=d.selectionStart??d.value.length,end=d.selectionEnd??d.value.length;if(start!==end)d.value=d.value.slice(0,start)+d.value.slice(end);else if(start>0)d.value=d.value.slice(0,start-1)+d.value.slice(end);const pos=start===end?Math.max(0,start-1):start;d.focus();d.setSelectionRange(pos,pos)}
+function calcEquals(){const d=getCalcDisplay();try{let expression=d.value.trim();if(!expression)return;if(!/^[0-9+\-*/().\s]+$/.test(expression))throw new Error('Invalid characters');const result=Function('"use strict";return ('+expression+')')();if(typeof result!=='number'||!Number.isFinite(result))throw new Error('Invalid result');d.value=String(Math.round((result+Number.EPSILON)*1e10)/1e10);d.dataset.justCalculated='1'}catch(e){d.value='Error';d.dataset.justCalculated='1'}d.focus()}
+function initCalculator(){const d=getCalcDisplay();d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key==='='){e.preventDefault();calcEquals()}else if(e.key==='Escape'){e.preventDefault();calcClear()}else if(e.key==='Backspace'&&d.value==='Error'){e.preventDefault();calcClear()}else if(e.key.length===1&&!/[0-9+\-*/().\s]/.test(e.key)){e.preventDefault()}})}
 function tagFigureValues(){document.querySelectorAll('.metric-value,.big-total,.subtotal span,.break-row strong,.result strong,#amort-body td:not(:first-child)').forEach(el=>el.classList.add('figure-value'))}
 function toggleFigures(){const hidden=document.body.classList.toggle('figures-hidden'),btn=document.getElementById('figure-toggle');btn.setAttribute('aria-pressed',String(hidden));btn.textContent=hidden?'👁 Show figures':'👁 Hide figures';localStorage.setItem('selfBuildHideFigures',hidden?'1':'0')}
 function restoreFigurePreference(){if(localStorage.getItem('selfBuildHideFigures')==='1'){document.body.classList.add('figures-hidden');const btn=document.getElementById('figure-toggle');btn.setAttribute('aria-pressed','true');btn.textContent='👁 Show figures'}}
 const figureObserver=new MutationObserver(tagFigureValues);figureObserver.observe(document.querySelector('main.app'),{childList:true,subtree:true});
-renderCosts();renderFunds();renderOwed();renderPatExtras();loadData();recalc();calcMortgage();calcFunds();calcOwed();tagFigureValues();restoreFigurePreference();
+initCalculator();renderCosts();renderFunds();renderOwed();renderPatExtras();loadData();recalc();calcMortgage();calcFunds();calcOwed();tagFigureValues();restoreFigurePreference();
 </script>
 <script id="access-gate-script">
 (function(){
